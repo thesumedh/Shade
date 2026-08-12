@@ -1,0 +1,123 @@
+﻿import {
+  type CircuitContext,
+  sampleContractAddress,
+  createConstructorContext,
+  createCircuitContext
+} from "@midnight-ntwrk/compact-runtime";
+import {
+  Contract,
+  type Ledger,
+  ledger,
+  type Order
+} from "../managed/shade/contract/index.js";
+import { type ShadePrivateState, witnesses } from "../witnesses.js";
+
+export class ShadeSimulator {
+  readonly contract: Contract<ShadePrivateState>;
+  circuitContext: CircuitContext<ShadePrivateState>;
+
+  constructor(initialSupply: bigint = 1_000_000n) {
+    this.contract = new Contract<ShadePrivateState>(witnesses);
+    // ownerAddr must match the coinPublicKey derived from createConstructorContext's
+    // "0".repeat(64) arg — which encodes to 32 zero bytes.
+    const ownerAddr = new Uint8Array(32);
+    const {
+      currentPrivateState,
+      currentContractState,
+      currentZswapLocalState
+    } = this.contract.initialState(
+      createConstructorContext({}, "0".repeat(64)),
+      initialSupply,
+      { bytes: ownerAddr }
+    );
+    this.circuitContext = createCircuitContext(
+      sampleContractAddress(),
+      currentZswapLocalState,
+      currentContractState,
+      currentPrivateState
+    );
+  }
+
+  public getLedger(): Ledger {
+    return ledger(this.circuitContext.currentQueryContext.state);
+  }
+
+  public getPrivateState(): ShadePrivateState {
+    return this.circuitContext.currentPrivateState;
+  }
+
+  public submitOrder(
+    direction: bigint,
+    price: bigint,
+    size: bigint,
+    nonce: Uint8Array
+  ): { ledger: Ledger; commitment: Uint8Array } {
+    const order: Order = { direction, price, size };
+    this.circuitContext.currentPrivateState.submitOrder = { order, nonce };
+    const result = this.contract.impureCircuits.submit_order(
+      this.circuitContext
+    );
+    this.circuitContext = result.context;
+    return {
+      ledger: ledger(this.circuitContext.currentQueryContext.state),
+      commitment: result.result
+    };
+  }
+
+  public matchOrders(
+    orderA: Order,
+    aNonce: Uint8Array,
+    commitA: Uint8Array,
+    orderB: Order,
+    bNonce: Uint8Array,
+    commitB: Uint8Array
+  ): Ledger {
+    this.circuitContext.currentPrivateState.matchOrderA = {
+      order: orderA,
+      nonce: aNonce
+    };
+    this.circuitContext.currentPrivateState.matchOrderB = {
+      order: orderB,
+      nonce: bNonce
+    };
+
+    this.circuitContext = this.contract.impureCircuits.match_orders(
+      this.circuitContext,
+      commitA,
+      commitB
+    ).context;
+    return ledger(this.circuitContext.currentQueryContext.state);
+  }
+
+  public cancelOrder(
+    order: Order,
+    nonce: Uint8Array,
+    commitment: Uint8Array
+  ): Ledger {
+    this.circuitContext.currentPrivateState.cancelOrder = { order, nonce };
+
+    this.circuitContext = this.contract.impureCircuits.cancel_order(
+      this.circuitContext,
+      commitment
+    ).context;
+    return ledger(this.circuitContext.currentQueryContext.state);
+  }
+
+  public getBalance(): bigint {
+    const result = this.contract.impureCircuits.get_balance(
+      this.circuitContext
+    );
+    this.circuitContext = result.context;
+    return result.result;
+  }
+
+  public transferTokens(amount: bigint, recipientAddr: Uint8Array): Ledger {
+    const result = this.contract.impureCircuits.transfer_tokens(
+      this.circuitContext,
+      amount,
+      { bytes: recipientAddr }
+    );
+    this.circuitContext = result.context;
+    return ledger(this.circuitContext.currentQueryContext.state);
+  }
+}

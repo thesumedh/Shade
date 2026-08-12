@@ -1,0 +1,48 @@
+{
+  "name": "shade",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shade-cli",
+    "contract",
+    "relay"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.1.1",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.64.0",
+    "@typescript-eslint/parser": "^8.64.0",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "testcontainers": "^12.0.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.0"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "0.16.0",
+    "@midnight-ntwrk/ledger-v8": "^8.0.0",
+    "@midnight-ntwrk/midnight-js-contracts": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-http-client-proof-provider": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-level-private-state-provider": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-network-id": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-node-zk-config-provider": "^4.0.0",
+    "@midnight-ntwrk/midnight-js-types": "^4.0.0",
+    "@midnight-ntwrk/wallet-sdk-address-format": "^3.0.0",
+    "@midnight-ntwrk/wallet-sdk-dust-wallet": "^3.0.0",
+    "@midnight-ntwrk/wallet-sdk-facade": "^3.0.0",
+    "@midnight-ntwrk/wallet-sdk-hd": "^3.0.0",
+    "@midnight-ntwrk/wallet-sdk-shielded": "^2.0.0",
+    "@midnight-ntwrk/wallet-sdk-unshielded-wallet": "^2.0.0",
+    "pino": "^10.3.1",
+    "pino-pretty": "^13.1.3",
+    "ws": "^8.19.0"
+  },
+  "overrides": {
+    "smoldot": "npm:@aspect-build/empty@0.0.0"
+  }
+}
