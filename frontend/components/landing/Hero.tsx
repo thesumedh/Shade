@@ -26,26 +26,32 @@ export default function Hero() {
       }} />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center h-full">
-        {/* Left: Text */}
-        <div className="w-full md:w-1/2 flex flex-col items-start text-left pt-20 md:pt-0">
+        {/* Left: Text & Action Buttons (Higher z-index & explicit pointer events) */}
+        <div className="w-full md:w-1/2 flex flex-col items-start text-left pt-20 md:pt-0 relative z-20 pointer-events-auto">
           <h1 className="text-5xl md:text-7xl font-medium tracking-tight text-white mb-6 hero-title opacity-0 translate-y-3">
             Trade Without a Trace.
           </h1>
           <p className="text-lg md:text-xl text-white/60 max-w-xl mb-10 font-mono hero-subtitle opacity-0 translate-y-3">
             Zero-knowledge block trading on the Midnight Network. The network sees a hash, not a price.
           </p>
-          <div className="flex flex-col sm:flex-row items-start gap-4 hero-cta opacity-0">
-            <Link href="/dashboard" prefetch={false} className="px-8 py-4 bg-white text-black font-medium text-sm tracking-widest uppercase hover:bg-white/90 transition-colors inline-block text-center">
+          <div className="flex flex-col sm:flex-row items-start gap-4 hero-cta opacity-0 relative z-30">
+            <Link
+              href="/dashboard"
+              className="px-8 py-4 bg-white text-black font-medium text-sm tracking-widest uppercase hover:bg-white/90 transition-all inline-block text-center cursor-pointer shadow-lg shadow-white/10 hover:scale-[1.02] active:scale-[0.98]"
+            >
               Launch Dashboard
             </Link>
-            <Link href="/demo" prefetch={false} className="px-8 py-4 border border-white/20 text-white/70 font-medium text-sm tracking-widest uppercase hover:border-white/40 hover:text-white transition-all inline-block text-center">
+            <Link
+              href="/demo"
+              className="px-8 py-4 border border-white/20 text-white/70 font-medium text-sm tracking-widest uppercase hover:border-white/40 hover:text-white transition-all inline-block text-center cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+            >
               View Architecture
             </Link>
           </div>
         </div>
 
         {/* Right: 3D Logo */}
-        <div className="w-full md:w-1/2 h-[50vh] md:h-full relative hero-logo opacity-0">
+        <div className="w-full md:w-1/2 h-[50vh] md:h-full relative z-10 hero-logo opacity-0">
           <ThreeLogo />
         </div>
       </div>
