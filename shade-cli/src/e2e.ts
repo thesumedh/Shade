@@ -1,4 +1,4 @@
-﻿import { createLogger } from './logger-utils.js';
+import { createLogger } from './logger-utils.js';
 import { StandaloneConfig, currentDir } from './config.js';
 import * as api from './api.js';
 import { Shade } from '@midnight-ntwrk/shade-contract';

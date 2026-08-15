@@ -1,4 +1,4 @@
-﻿import { Shade, type ShadePrivateState } from '@midnight-ntwrk/shade-contract';
+import { Shade, type ShadePrivateState } from '@midnight-ntwrk/shade-contract';
 import type { MidnightProviders } from '@midnight-ntwrk/midnight-js-types';
 import type { DeployedContract, FoundContract } from '@midnight-ntwrk/midnight-js-contracts';
 import type { ProvableCircuitId } from '@midnight-ntwrk/compact-js';

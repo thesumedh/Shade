@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { Server, CheckCircle2, XCircle, Copy, Check } from 'lucide-react';

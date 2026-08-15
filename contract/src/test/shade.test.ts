@@ -1,4 +1,4 @@
-﻿import { ShadeSimulator } from "./shade-simulator.js";
+import { ShadeSimulator } from "./shade-simulator.js";
 import { setNetworkId } from "@midnight-ntwrk/midnight-js-network-id";
 import { describe, it, expect } from "vitest";
 import { State } from "../managed/shade/contract/index.js";

@@ -1,4 +1,4 @@
-﻿import { deploy, configureProviders, buildWalletAndWaitForFunds, getCoinPublicKeyBytes, setLogger } from './api.js';
+import { deploy, configureProviders, buildWalletAndWaitForFunds, getCoinPublicKeyBytes, setLogger } from './api.js';
 import { PreprodConfig } from './config.js';
 import pino from 'pino';
 import fs from 'node:fs';

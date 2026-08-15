@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "@midnight-ntwrk/shade-contract",
   "version": "0.1.0",
   "license": "Apache-2.0",
@@ -19,7 +19,7 @@
     "compact": "compact compile src/shade.compact src/managed/shade",
     "test": "vitest run",
     "test:compile": "npm run compact && vitest run",
-    "build": "rm -rf dist && tsc --project tsconfig.build.json && cp -Rf ./src/managed ./dist/managed && cp ./src/shade.compact ./dist",
+    "build": "node build.js",
     "lint": "eslint src",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   }

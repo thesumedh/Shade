@@ -1,4 +1,4 @@
-﻿import { Shade, type ShadePrivateState, witnesses } from '@midnight-ntwrk/shade-contract';
+import { Shade, type ShadePrivateState, witnesses } from '@midnight-ntwrk/shade-contract';
 import { deployContract, findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 import type { ShadeProviders, DeployedShadeContract } from './common-types';
