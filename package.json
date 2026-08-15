@@ -4,10 +4,16 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "shade-cli",
     "contract",
+    "frontend",
+    "shade-cli",
     "relay"
   ],
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.1.1",
