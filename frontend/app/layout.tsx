@@ -14,8 +14,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('http://localhost:3000'),
   title: 'Shade — Built on Midnight',
   description: 'Zero-knowledge block trading on the Midnight Network.',
+  icons: {
+    icon: '/icon.svg',
+  },
   openGraph: {
     title: 'Shade — Built on Midnight',
     description: 'Zero-knowledge block trading on the Midnight Network.',
