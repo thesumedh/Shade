@@ -288,13 +288,19 @@ function DashboardContent() {
         }
         const providers = providersRef.current;
 
-        // Always join the pre-deployed contract — any wallet can submit orders regardless of ownership
+        // Always join or deploy the contract
         if (!activeContractRef.current) {
-          const addr = state.contractAddress;
+          let addr = state.contractAddress;
           if (!addr) {
-            throw new Error("No contract address set. Deploy a contract via the CLI and set NEXT_PUBLIC_SHADE_ADDRESS.");
+            console.log("[Shade] No active contract address. Deploying fresh Shade contract on Preprod...");
+            const deployed = await deployShade(providers, coinPublicKey as string);
+            activeContractRef.current = deployed;
+            addr = deployed.deployTxData.public.contractAddress;
+            dispatch({ type: "SET_CONTRACT_ADDRESS", address: addr });
+            router.replace(`/dashboard?contract=${addr}`, { scroll: false });
+          } else {
+            activeContractRef.current = await joinShade(providers, addr);
           }
-          activeContractRef.current = await joinShade(providers, addr);
         }
 
         const contract = activeContractRef.current!;
@@ -522,10 +528,32 @@ function DashboardContent() {
           )}
         </div>
       ) : (
-        <div className="px-6 py-2 border-b border-amber-500/20 bg-amber-500/[0.03] flex items-center justify-between gap-4">
-          <span className="text-[10px] font-mono text-amber-400/80 tracking-wider">
-            NO ACTIVE CONTRACT CONFIGURED — CLICK "DEPLOY CONTRACT" ABOVE TO DEPLOY A FRESH SHADE DARK POOL ON PREPROD
+        <div className="px-6 py-2.5 border-b border-amber-500/20 bg-amber-500/[0.04] flex flex-wrap items-center justify-between gap-3">
+          <span className="text-[11px] font-mono text-amber-400/90 tracking-wide flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+            NO CONTRACT CONNECTED — DEPLOY ONE WITH 1-CLICK OR PASTE AN EXISTING ADDRESS
           </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDeployContract}
+              disabled={isDeploying || !walletConnected}
+              className="text-[10px] font-mono bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white px-3 py-1 rounded border border-purple-400 transition-all font-medium cursor-pointer"
+            >
+              {isDeploying ? "DEPLOYING..." : "⚡ DEPLOY NEW CONTRACT"}
+            </button>
+            <input
+              type="text"
+              placeholder="Or paste contract address & press Enter..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                  const val = e.currentTarget.value.trim();
+                  dispatch({ type: "SET_CONTRACT_ADDRESS", address: val });
+                  router.replace(`/dashboard?contract=${val}`, { scroll: false });
+                }
+              }}
+              className="bg-black/60 border border-white/10 text-white text-[10px] font-mono px-2 py-1 rounded w-64 focus:outline-none focus:border-purple-500"
+            />
+          </div>
         </div>
       )}
 
