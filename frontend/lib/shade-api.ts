@@ -8,12 +8,37 @@ const shadeCompiledContract = CompiledContract.make('shade', Shade.Contract).pip
   CompiledContract.withWitnesses(witnesses)
 );
 
+// Browser-safe hex decoder (no Node Buffer required)
+const fromHex = (hex: string): Uint8Array => {
+  const clean = hex.startsWith('0x') ? hex.slice(2) : hex;
+  const matches = clean.match(/.{1,2}/g) ?? [];
+  return new Uint8Array(matches.map((byte) => parseInt(byte, 16)));
+};
+
+// Ensures any string/Uint8Array is normalized into a strict 32-byte Uint8Array
+const normalizeToBytes32 = (input: string | Uint8Array): Uint8Array => {
+  const bytes32 = new Uint8Array(32);
+  let src: Uint8Array;
+
+  if (typeof input === 'string') {
+    src = fromHex(input);
+  } else if (input instanceof Uint8Array) {
+    src = input;
+  } else {
+    src = new Uint8Array(0);
+  }
+
+  // Copy up to 32 bytes into the buffer
+  bytes32.set(src.subarray(0, 32));
+  return bytes32;
+};
+
 export const deployShade = async (
   providers: ShadeProviders,
-  ownerAddrHex: string,
+  ownerAddr: string | Uint8Array,
   initialSupply: bigint = 1_000_000n
 ): Promise<DeployedShadeContract> => {
-  const ownerBytes = new Uint8Array(Buffer.from(ownerAddrHex, 'hex'));
+  const ownerBytes = normalizeToBytes32(ownerAddr);
   return deployContract(providers as any, {
     compiledContract: shadeCompiledContract as any,
     privateStateId: ShadePrivateStateId,
@@ -144,8 +169,9 @@ export const transferTokens = async (
   providers: ShadeProviders,
   contract: DeployedShadeContract,
   amount: bigint,
-  recipientAddr: Uint8Array
+  recipientAddr: string | Uint8Array
 ) => {
-  const tx = await contract.callTx.transfer_tokens(amount, { bytes: recipientAddr });
+  const recipientBytes = normalizeToBytes32(recipientAddr);
+  const tx = await contract.callTx.transfer_tokens(amount, { bytes: recipientBytes });
   return tx.public;
 };
