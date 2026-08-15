@@ -14,13 +14,24 @@ const logger = pino({
 
 setLogger(logger);
 
+const getSeed = (): string => {
+  if (process.env.DEPLOYER_SEED) return process.env.DEPLOYER_SEED.trim();
+  try {
+    const envPath = path.resolve(process.cwd(), '.env');
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
+      const match = content.match(/^(?:DEPLOYER_SEED|MIDNIGHT_SEED)=(.*)$/m);
+      if (match) return match[1].trim();
+    }
+  } catch {}
+  return '0000000000000000000000000000000000000000000000000000000000000001';
+};
+
 async function run() {
   const config = new PreprodConfig();
+  const seed = getSeed();
 
-  // Use a fixed seed for the deployer if provided in env, otherwise generate one
-  const seed = process.env.DEPLOYER_SEED || '0000000000000000000000000000000000000000000000000000000000000001';
-
-  logger.info('Starting deployment on Preprod...');
+  logger.info(`Starting deployment on Preprod with seed: ${seed.slice(0, 8)}...`);
 
   const walletCtx = await buildWalletAndWaitForFunds(config, seed);
   const providers = await configureProviders(walletCtx, config);
@@ -31,10 +42,17 @@ async function run() {
 
   logger.info(`SUCCESS: Shade contract deployed at: ${address}`);
 
-  // Save the address to a file for the interaction scripts
+  // Save the address to a file for the interaction scripts and frontend
   const addressFile = path.resolve(process.cwd(), 'deployed-address.txt');
   fs.writeFileSync(addressFile, address);
   logger.info(`Address saved to ${addressFile}`);
+
+  // Also update frontend/.env.local if frontend folder exists
+  const frontendEnvPath = path.resolve(process.cwd(), '..', 'frontend', '.env.local');
+  try {
+    fs.writeFileSync(frontendEnvPath, `NEXT_PUBLIC_SHADE_ADDRESS=${address}\nNEXT_PUBLIC_RELAY_URL=ws://localhost:4400\n`);
+    logger.info(`Updated ${frontendEnvPath} with new contract address`);
+  } catch {}
 
   await walletCtx.wallet.stop();
 }

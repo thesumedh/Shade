@@ -9,13 +9,13 @@
     "build": "node build.js",
     "lint": "eslint src",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "preview": "node --experimental-specifier-resolution=node --loader ts-node/esm src/preview.ts",
+    "preview": "node --max-old-space-size=8192 --experimental-specifier-resolution=node --loader ts-node/esm src/preview.ts",
     "preview-ps": "docker compose -f proof-server.yml pull && node --experimental-specifier-resolution=node --loader ts-node/esm src/preview-start-proof-server.ts",
-    "preprod": "node --experimental-specifier-resolution=node --loader ts-node/esm src/preprod.ts",
+    "preprod": "node --max-old-space-size=8192 --experimental-specifier-resolution=node --loader ts-node/esm src/preprod.ts",
     "preprod-ps": "docker compose -f proof-server.yml pull && node --experimental-specifier-resolution=node --loader ts-node/esm src/preprod-start-proof-server.ts",
-    "deploy": "node --experimental-specifier-resolution=node --loader ts-node/esm src/deploy-preview.ts",
-    "deploy:preview": "node --experimental-specifier-resolution=node --loader ts-node/esm src/deploy-preview.ts",
-    "deploy:preprod": "node --experimental-specifier-resolution=node --loader ts-node/esm src/deploy-preprod.ts",
+    "deploy": "node --max-old-space-size=8192 --experimental-specifier-resolution=node --loader ts-node/esm src/deploy-preprod.ts",
+    "deploy:preview": "node --max-old-space-size=8192 --experimental-specifier-resolution=node --loader ts-node/esm src/deploy-preview.ts",
+    "deploy:preprod": "node --max-old-space-size=8192 --experimental-specifier-resolution=node --loader ts-node/esm src/deploy-preprod.ts",
     "wallet": "node --experimental-specifier-resolution=node --loader ts-node/esm src/generate-wallet.ts"
   },
   "dependencies": {

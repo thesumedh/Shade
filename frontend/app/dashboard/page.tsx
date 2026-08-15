@@ -14,7 +14,7 @@ import type { RelayOrderData, RelayMessage } from "@/lib/relay-client";
 import { useWallet } from "@/contexts/WalletContext";
 import { useRelay } from "@/hooks/use-relay";
 import { createBrowserProviders } from "@/lib/providers";
-import { joinShade, submitOrder, matchOrders, type SubmitOrderResult } from "@/lib/shade-api";
+import { joinShade, deployShade, submitOrder, matchOrders, type SubmitOrderResult } from "@/lib/shade-api";
 import type { Shade } from "@midnight-ntwrk/shade-contract";
 
 // Per-trader ZK data (stored in refs — Uint8Arrays aren't serializable in React state)
@@ -240,6 +240,32 @@ function DashboardContent() {
     setOrigin(window.location.origin);
   }, []);
 
+  const [isDeploying, setIsDeploying] = React.useState(false);
+
+  const handleDeployContract = useCallback(async () => {
+    if (!walletConnected || !wallet || !address || !coinPublicKey || !encryptionPublicKey) {
+      alert("Please connect your Midnight Lace wallet first.");
+      return;
+    }
+    setIsDeploying(true);
+    try {
+      if (!providersRef.current) {
+        providersRef.current = createBrowserProviders(wallet, coinPublicKey as string, encryptionPublicKey as string, "preprod");
+      }
+      const providers = providersRef.current;
+      const deployedContract = await deployShade(providers, coinPublicKey as string);
+      const newAddress = deployedContract.deployTxData.public.contractAddress;
+      activeContractRef.current = deployedContract;
+      dispatch({ type: "SET_CONTRACT_ADDRESS", address: newAddress });
+      router.replace(`/dashboard?contract=${newAddress}`, { scroll: false });
+    } catch (err: any) {
+      console.error("Contract deployment failed:", err);
+      alert("Deployment failed: " + (err.message || err));
+    } finally {
+      setIsDeploying(false);
+    }
+  }, [walletConnected, wallet, address, coinPublicKey, encryptionPublicKey, router]);
+
   // Update URL when contract address changes
   useEffect(() => {
     if (state.contractAddress && !searchParams.get('contract')) {
@@ -458,26 +484,48 @@ function DashboardContent() {
               RESET
             </button>
           )}
+          <button
+            onClick={handleDeployContract}
+            disabled={isDeploying || !walletConnected}
+            className={`text-[10px] font-mono px-3 py-1 rounded-full border transition-all ${
+              isDeploying
+                ? "bg-purple-600/30 text-purple-200 border-purple-500/50 animate-pulse cursor-wait"
+                : walletConnected
+                ? "bg-white/10 text-white hover:bg-white/20 border-white/20 hover:border-white/40"
+                : "text-white/20 border-white/[0.06] cursor-not-allowed"
+            }`}
+          >
+            {isDeploying ? "DEPLOYING CONTRACT..." : "DEPLOY CONTRACT"}
+          </button>
           <WalletConnect />
         </div>
       </nav>
 
-      {/* Share URL bar */}
-      {shareUrl && (
+      {/* Active Contract & Share URL bar */}
+      {state.contractAddress ? (
         <div className="px-6 py-2 border-b border-white/[0.06] bg-white/[0.02] flex items-center gap-4">
-          <span className="text-[10px] font-mono text-white/40 tracking-widest shrink-0">
-            SHARE_WITH_COUNTERPARTY:
+          <span className="text-[10px] font-mono text-emerald-400/80 tracking-widest shrink-0 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            CONTRACT:
           </span>
           <code className="text-[10px] font-mono text-white/60 truncate flex-1">
-            {shareUrl}
+            {state.contractAddress}
           </code>
-          <button
-            onClick={handleCopy}
-            className="text-[10px] font-mono text-white/40 hover:text-white px-3 py-1 border border-white/[0.06] hover:border-white/20 transition-all flex items-center gap-2 shrink-0"
-          >
-            {copied ? <Check size={10} /> : <Copy size={10} />}
-            {copied ? "COPIED" : "COPY"}
-          </button>
+          {shareUrl && (
+            <button
+              onClick={handleCopy}
+              className="text-[10px] font-mono text-white/40 hover:text-white px-3 py-1 border border-white/[0.06] hover:border-white/20 transition-all flex items-center gap-2 shrink-0"
+            >
+              {copied ? <Check size={10} /> : <Copy size={10} />}
+              {copied ? "URL COPIED" : "SHARE LINK"}
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="px-6 py-2 border-b border-amber-500/20 bg-amber-500/[0.03] flex items-center justify-between gap-4">
+          <span className="text-[10px] font-mono text-amber-400/80 tracking-wider">
+            NO ACTIVE CONTRACT CONFIGURED — CLICK "DEPLOY CONTRACT" ABOVE TO DEPLOY A FRESH SHADE DARK POOL ON PREPROD
+          </span>
         </div>
       )}
 
