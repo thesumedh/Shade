@@ -13,9 +13,7 @@
 ## 🎬 Project Video & Live Demo
 
 - **Live DApp:** [http://localhost:3000/dashboard](http://localhost:3000/dashboard) *(Local dev)*
-- **Demo Video:**  
-  > *[Demo Video Placeholder — Insert your YouTube / Loom walkthrough link here]*  
-  [![Shade Demo Video](https://img.shields.io/badge/Watch_Demo_Video-YouTube-red?style=for-the-badge&logo=youtube)](https://youtube.com)
+- **Demo Video:**  https://youtu.be/V6sNaQzLgSw
 - **GitHub Repository:** [https://github.com/thesumedh/Shade](https://github.com/thesumedh/Shade)
 - **Explorer (Midnight Preprod):** [https://explorer.preprod.midnight.network/](https://explorer.preprod.midnight.network/)
 
