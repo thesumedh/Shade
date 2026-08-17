@@ -12,7 +12,7 @@
 
 ## 🎬 Project Video & Live Demo
 
-- **Live DApp:** [http://localhost:3000/dashboard](http://localhost:3000/dashboard) *(Local dev)*
+- **Live DApp:** https://shade-eta-eight.vercel.app/
 - **Demo Video:**  https://youtu.be/V6sNaQzLgSw
 - **GitHub Repository:** [https://github.com/thesumedh/Shade](https://github.com/thesumedh/Shade)
 - **Explorer (Midnight Preprod):** [https://explorer.preprod.midnight.network/](https://explorer.preprod.midnight.network/)
